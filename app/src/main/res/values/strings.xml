@@ -6,4 +6,6 @@
     <string name="tab1">Count</string>
     <string name="tab2">Saved</string>
     <string name="tab3">Settings</string>
+    <string name="switch1">Screen always on</string>
+    <string name="switch2">Max brightness</string>
 </resources>
