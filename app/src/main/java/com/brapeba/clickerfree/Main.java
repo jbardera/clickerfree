@@ -1,7 +1,9 @@
 package com.brapeba.clickerfree;
 
+import android.content.DialogInterface;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 public class Main extends AppCompatActivity
 {
@@ -88,8 +97,56 @@ public class Main extends AppCompatActivity
         switch (id)
         {
             case R.id.action_about:
+                final AlertDialog abBuilder = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay)
+                        .setPositiveButton(getString(R.string.string5), null)
+                        .create();
+                TextView about = new TextView(this);
+                abBuilder.setView(about);
+                abBuilder.setTitle(getString(R.string.string3));
+                abBuilder.setMessage(getString(R.string.string4));
+                abBuilder.setOnShowListener(new DialogInterface.OnShowListener()
+                {
+                    @Override
+                    public void onShow(DialogInterface dialog)
+                    {
+                        final Button btnAccept = abBuilder.getButton(AlertDialog.BUTTON_POSITIVE);
+                        btnAccept.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                abBuilder.dismiss();
+                            }
+                        });
+                    }
+                });
+                abBuilder.show();
                 return true;
             case R.id.action_donate:
+                final AlertDialog doBuilder = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay)
+                        .setPositiveButton(getString(R.string.string5), null)
+                        .create();
+                TextView donate = new TextView(this);
+                doBuilder.setView(donate);
+                doBuilder.setTitle(getString(R.string.string3));
+                doBuilder.setMessage(getString(R.string.string4));
+                doBuilder.setOnShowListener(new DialogInterface.OnShowListener()
+                {
+                    @Override
+                    public void onShow(DialogInterface dialog)
+                    {
+                        final Button btnAccept = doBuilder.getButton(AlertDialog.BUTTON_POSITIVE);
+                        btnAccept.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                doBuilder.dismiss();
+                            }
+                        });
+                    }
+                });
+                doBuilder.show();
                 return true;
         }
 

@@ -5,17 +5,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +25,7 @@ public class SavedF extends Fragment
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static List<CountO> allCounts;
+    private static List<CountO> afterDel= new ArrayList<CountO>();
     private static List<CountO> undoDel= new ArrayList<CountO>();
     private static ListView cListView;
     private static LinearLayout linL;
@@ -81,10 +76,14 @@ public class SavedF extends Fragment
                 // undo
                 for (CountO i : undoDel)
                 {
+                    i.setToBeDel(false);
                     allCounts.add(i);
-                    Log.e(TAG, "Undo del=" + i.getName());
                 }
+                SaveC.dumpMemToInternalStorage(allCounts, getActivity());
                 undoDel.clear();
+                adapter = new SavedFCustomAdapter(getActivity(),allCounts);
+                cListView.setAdapter(adapter);
+                cListView.requestLayout();
             }
         };
         FloatingActionButton fabd = (FloatingActionButton) view.findViewById(R.id.fabld);
@@ -95,18 +94,21 @@ public class SavedF extends Fragment
             {
                 Snackbar.make(view, getString(R.string.string2), Snackbar.LENGTH_LONG).setAction("Undo", mOnClickListener).show();
                 List<CountO> delData = adapter.data;
-                allCounts.clear();
+                afterDel.clear();
                 undoDel.clear();
                 for (CountO i : delData)
                 {
                     if (i.getToBeDel())
                     {
                         undoDel.add(i);
-                        Log.e(TAG, "Deleted=" + i.getName());
-                    } else allCounts.add(i);
+                    } else
+                    {
+                        afterDel.add(i);
+                    }
                 }
-                SaveC.dumpMemToInternalStorage(allCounts,getActivity());
-                refreshTab(getActivity());
+                allCounts.clear();
+                SaveC.dumpMemToInternalStorage(afterDel, getActivity());
+                refreshTab(getActivity()); // it reloads allCounts from storage
             }
         });
     }

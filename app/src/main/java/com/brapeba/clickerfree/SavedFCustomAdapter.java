@@ -25,14 +25,12 @@ public class SavedFCustomAdapter extends BaseAdapter
     public Context mContext;
     public List<CountO> data;
     private LayoutInflater mInflater = null;
-    private boolean[] itemChecked;
 
     public SavedFCustomAdapter(Context context,List<CountO> counts)
     {
         super();
         mContext = context;
         data = counts;
-        itemChecked = new boolean[counts.size()];
         mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -63,11 +61,6 @@ public class SavedFCustomAdapter extends BaseAdapter
 
         holder.name.setText(getItem(position).getName());
         holder.clicks.setText(String.valueOf(getItem(position).getClicks()));
-
-        if (itemChecked[position])
-            holder.checked.setChecked(true);
-        else
-            holder.checked.setChecked(false);
 
         holder.checked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

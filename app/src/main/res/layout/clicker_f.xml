@@ -4,6 +4,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".Main$PlaceholderFragment">
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabreset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchorGravity="bottom|right|end"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:text="0"
+        android:textColor="@color/colorPrimaryDark"
+        style="@android:style/TextAppearance.Large"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_lock_power_off"
+        android:foregroundTint="@color/colorPrimaryDark"/>
+
     <TextView
         android:id="@+id/clicker_ball"
         android:layout_width="185dp"
@@ -26,6 +40,7 @@
         android:layout_alignParentRight="true"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
+        android:foregroundTint="@color/colorPrimaryDark"
         android:src="@android:drawable/ic_menu_save"/>
 
 </RelativeLayout>

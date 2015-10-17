@@ -128,59 +128,72 @@ public class ClickerF extends Fragment
         {
             @Override public void onClick(View view)
             {
-                Snackbar.make(view, getString(R.string.saving), Snackbar.LENGTH_LONG).show();
-                //let's save the count: asking for a name
-                final AlertDialog fbuilder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_PopupOverlay)
-                        .setPositiveButton(getString(R.string.save), null)
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create();
-                final EditText edtName = new EditText(getActivity());
-                myName = new BigInteger(32, new SecureRandom()).toString(16);
-                edtName.setText(myName);
-                fbuilder.setView(edtName);
-                fbuilder.setTitle(getString(R.string.string1));
-                fbuilder.setOnShowListener(new DialogInterface.OnShowListener()
+                if (myCounter.getClicks() > 0)
                 {
-                    @Override
-                    public void onShow(DialogInterface dialog)
+                    Snackbar.make(view, getString(R.string.saving), Snackbar.LENGTH_LONG).show();
+                    //let's save the count: asking for a name
+                    final AlertDialog fbuilder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_PopupOverlay)
+                            .setPositiveButton(getString(R.string.save), null)
+                            .setNegativeButton(getString(R.string.cancel), null)
+                            .create();
+                    final EditText edtName = new EditText(getActivity());
+                    myName = new BigInteger(32, new SecureRandom()).toString(16);
+                    edtName.setText(myName);
+                    fbuilder.setView(edtName);
+                    fbuilder.setTitle(getString(R.string.string1));
+                    fbuilder.setOnShowListener(new DialogInterface.OnShowListener()
                     {
-                        final Button btnAccept = fbuilder.getButton(AlertDialog.BUTTON_POSITIVE);
-                        btnAccept.setOnClickListener(new View.OnClickListener()
+                        @Override
+                        public void onShow(DialogInterface dialog)
                         {
-                            @Override
-                            public void onClick(View v)
+                            final Button btnAccept = fbuilder.getButton(AlertDialog.BUTTON_POSITIVE);
+                            btnAccept.setOnClickListener(new View.OnClickListener()
                             {
-                                if (edtName.getText().toString().isEmpty())
+                                @Override
+                                public void onClick(View v)
                                 {
-                                    Toast.makeText(getActivity(), getString(R.string.string1), Toast.LENGTH_SHORT).show();
-                                } else
-                                {
-                                    //let's save the count: now saving it!
-                                    fbuilder.dismiss();
-                                    myCounter.setName(edtName.getText().toString());
-                                    if (!SaveC.saveToInternalStorage(myCounter,getActivity()))
+                                    if (edtName.getText().toString().isEmpty())
                                     {
-                                        // returned false -> handle error
+                                        Toast.makeText(getActivity(), getString(R.string.string1), Toast.LENGTH_SHORT).show();
+                                    } else
+                                    {
+                                        //let's save the count: now saving it!
+                                        fbuilder.dismiss();
+                                        myCounter.setName(edtName.getText().toString());
+                                        if (!SaveC.saveToInternalStorage(myCounter, getActivity()))
+                                        {
+                                            // returned false -> handle error
+                                        }
+                                        SavedF.refreshTab(getActivity());
                                     }
-                                    SavedF.refreshTab(getActivity());
                                 }
-                            }
-                        });
+                            });
 
-                        final Button btnDecline = fbuilder.getButton(DialogInterface.BUTTON_NEGATIVE);
-                        btnDecline.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
+                            final Button btnDecline = fbuilder.getButton(DialogInterface.BUTTON_NEGATIVE);
+                            btnDecline.setOnClickListener(new View.OnClickListener()
                             {
-                                fbuilder.dismiss();
-                            }
-                        });
-                    }
-                });
-                fbuilder.show();
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    fbuilder.dismiss();
+                                }
+                            });
+                        }
+                    });
+                    fbuilder.show();
+                }
             }
          });
+        FloatingActionButton fabReset = (FloatingActionButton) view.findViewById(R.id.fabreset);
+        fabReset.setOnClickListener(new View.OnClickListener()
+        {
+            @Override public void onClick(View view)
+            {
+                myCounter.setClicks(0);
+                TextView tv3 = (TextView) getActivity().findViewById(R.id.clicker_ball);
+                tv3.setText(getString(R.string.clickme));
+            }
+        });
     }
 
     @Override public void onResume()
