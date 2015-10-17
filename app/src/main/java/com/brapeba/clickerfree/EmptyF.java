@@ -40,7 +40,7 @@ public class EmptyF extends Fragment
     {
         View rootView = inflater.inflate(R.layout.empty_f, container, false);
         TextView textView = (TextView) rootView.findViewById(R.id.empty_label);
-        textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+        textView.setText(getString(R.string.app_name, getArguments().getInt(ARG_SECTION_NUMBER)));
         return rootView;
     }
 }

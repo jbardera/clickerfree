@@ -2,10 +2,15 @@
     <string name="app_name">Clicker (free)</string>
     <string name="menu_about">About</string>
     <string name="menu_donate">Donate</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab1">Count</string>
     <string name="tab2">Saved</string>
     <string name="tab3">Settings</string>
     <string name="switch1">Screen always on</string>
     <string name="switch2">Max brightness</string>
+    <string name="clickme">Click me!</string>
+    <string name="saving">Saving count</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="string1">Please type a label</string>
+    <string name="string2">Deleting...</string>
 </resources>

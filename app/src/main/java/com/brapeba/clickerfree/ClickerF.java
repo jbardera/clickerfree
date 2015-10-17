@@ -4,19 +4,23 @@ package com.brapeba.clickerfree;
  * Created by joanmi on 14-Oct-15.
  */
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -25,8 +29,8 @@ public class ClickerF extends Fragment
 {
     int fragVal;
     CountO myCounter;
-    double[] myPosition;             // latitude & longitude
-    String myName;                   // name to save
+    double[] myPosition;
+    String myName;
     View layoutView;
     TextView tv;
     SharedPreferences mySettings;
@@ -45,7 +49,7 @@ public class ClickerF extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState)
+    public void onSaveInstanceState (Bundle outState) // taking care when rotating screen
     {
         super.onSaveInstanceState(outState);
         outState.putLong("clicks", myCounter.getClicks());
@@ -58,14 +62,14 @@ public class ClickerF extends Fragment
     public void onActivityCreated (Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState!=null)
+        if (savedInstanceState!=null) // recover after rotating screen
         {
             myCounter.setClicks(savedInstanceState.getLong("clicks"));
             myPosition[0]=savedInstanceState.getDouble("latitude");
             myPosition[1]=savedInstanceState.getDouble("longitude");
             myCounter.setPosition(myPosition);
             myCounter.setName(savedInstanceState.getString("myName"));
-            tv.setText(String.valueOf(myCounter.getClicks()));
+            //if (myCounter.getClicks()>0) tv.setText(String.valueOf(myCounter.getClicks())); // not needed, it is already at onResume()
         }
     }
 
@@ -75,8 +79,7 @@ public class ClickerF extends Fragment
         super.onCreate(savedInstanceState);
         fragVal = getArguments() != null ? getArguments().getInt("val") : 1;
         myPosition = new double[]{0, 0};
-        myName = new BigInteger(32, new SecureRandom()).toString(16);
-        myCounter = new CountO(0, myName, myPosition);
+        myCounter = new CountO(0, myPosition);
         mySettings=getActivity().getSharedPreferences(PREFS, 0);
         if (mySettings.getBoolean("swOff",false)) getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);;
         if (mySettings.getBoolean("swDim",false))
@@ -85,11 +88,13 @@ public class ClickerF extends Fragment
             layoutParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
             getActivity().getWindow().setAttributes(layoutParams);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        super.onCreateView(inflater, container, savedInstanceState);
         layoutView = inflater.inflate(R.layout.clicker_f, container,false);
         return layoutView;
     }
@@ -97,6 +102,7 @@ public class ClickerF extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
+        super.onViewCreated(view,savedInstanceState);
         tv = (TextView) layoutView.findViewById(R.id.clicker_ball);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -120,13 +126,72 @@ public class ClickerF extends Fragment
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener()
         {
-            @Override
-            public void onClick(View view)
+            @Override public void onClick(View view)
             {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, getString(R.string.saving), Snackbar.LENGTH_LONG).show();
+                //let's save the count: asking for a name
+                final AlertDialog fbuilder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_PopupOverlay)
+                        .setPositiveButton(getString(R.string.save), null)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create();
+                final EditText edtName = new EditText(getActivity());
+                myName = new BigInteger(32, new SecureRandom()).toString(16);
+                edtName.setText(myName);
+                fbuilder.setView(edtName);
+                fbuilder.setTitle(getString(R.string.string1));
+                fbuilder.setOnShowListener(new DialogInterface.OnShowListener()
+                {
+                    @Override
+                    public void onShow(DialogInterface dialog)
+                    {
+                        final Button btnAccept = fbuilder.getButton(AlertDialog.BUTTON_POSITIVE);
+                        btnAccept.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                if (edtName.getText().toString().isEmpty())
+                                {
+                                    Toast.makeText(getActivity(), getString(R.string.string1), Toast.LENGTH_SHORT).show();
+                                } else
+                                {
+                                    //let's save the count: now saving it!
+                                    fbuilder.dismiss();
+                                    myCounter.setName(edtName.getText().toString());
+                                    if (!SaveC.saveToInternalStorage(myCounter,getActivity()))
+                                    {
+                                        // returned false -> handle error
+                                    }
+                                    SavedF.refreshTab(getActivity());
+                                }
+                            }
+                        });
+
+                        final Button btnDecline = fbuilder.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        btnDecline.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                fbuilder.dismiss();
+                            }
+                        });
+                    }
+                });
+                fbuilder.show();
             }
-        });
+         });
+    }
+
+    @Override public void onResume()
+    {
+        super.onResume();
+        if (myCounter.getClicks()>0) tv.setText(String.valueOf(myCounter.getClicks()));
+    }
+
+    @Override public void onPause()
+    {
+        super.onPause();
     }
 
 }
