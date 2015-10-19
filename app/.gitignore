@@ -1,3 +1,6 @@
 /build
 /androidTest/java/com/brapeba/clickerfree
 /test/java/com/brapeba/clickerfree
+/gradle
+/.idea
+/src/build.gradle
